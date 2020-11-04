@@ -50,7 +50,7 @@ namespace LoggingEngine
         {
             set
             {
-                string configPath = $"{Directory.GetCurrentDirectory()}{value}";
+                string configPath = $"{Logger.ExecPath}{value}";
                 string configFile = configPath + "logConfig.json";
 
                 if (!Directory.Exists(configPath))
@@ -61,7 +61,7 @@ namespace LoggingEngine
 
                 foreach (var level in Enum.GetValues(typeof(LogLevel)))
                 {
-                    string path = $"{Directory.GetCurrentDirectory()}{value}{level.ToString().ToLower()}";
+                    string path = $"{Logger.ExecPath}{value}{level.ToString().ToLower()}";
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
                 }

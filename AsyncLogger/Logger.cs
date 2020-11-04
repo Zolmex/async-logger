@@ -8,6 +8,8 @@ namespace LoggingEngine
 {
     public class Logger
     {
+        public static readonly string ExecPath = Directory.GetCurrentDirectory();
+
         private static readonly Logger DefaultLogger = new Logger(LoggerConfig.DefaultName);
         private static readonly BlockingCollection<LogMessage> Logs;
 
@@ -18,6 +20,9 @@ namespace LoggingEngine
             : this(type.Name) { }
         public Logger(string name)
         {
+            if (LoggerConfig.Configs == null)
+                LoggerConfig.ConfigFile = LoggerConfig.DefaultConfig[0].LogDir;
+
             _loggerName = name;
             var config = LoggerConfig.Configs.FirstOrDefault(cfg => cfg.LoggerName == _loggerName);
             if (config == null)
@@ -77,8 +82,6 @@ namespace LoggingEngine
 
         private void Log(string message, LogLevel level, bool saveToFile)
         {
-            if (LoggerConfig.Configs == null)
-                LoggerConfig.ConfigFile = LoggerConfig.DefaultConfig[0].LogDir;
             Logs.Add(new LogMessage()
             {
                 Text = $"{DateTime.Now.TimeOfDay}  {GetFixedLog(message, level)}",
@@ -98,9 +101,8 @@ namespace LoggingEngine
 
         private static void SaveToFile(string log, LogLevel level, string logDir)
         {
-            string path = $"{Directory.GetCurrentDirectory()}{logDir}{level.ToString().ToLower()}/log.txt";
-            using (StreamWriter wtr = new StreamWriter(path, true))
-                wtr.WriteLine(log);
+            string path = $"{ExecPath}{logDir}{level.ToString().ToLower()}/log.txt";
+            File.AppendAllLines(path, new string[] { log });
         }
     }
 
